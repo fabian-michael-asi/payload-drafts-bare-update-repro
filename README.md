@@ -42,4 +42,27 @@ global, update without draft
   still published after: false
 ```
 
+## Two related cases
+
+The script also prints two cases that matter for a fix.
+
+A bulk update by `where`, without `draft` or with `draft: false`, keeps the live document correct. But it saves a new published version as the latest, so the pending draft is no longer the latest version and a `draft: true` read returns the published content:
+
+```
+bulk update by where, update without draft
+live document before: { _status: 'published', price: 100, title: 'published title' }
+live document after:  { _status: 'published', price: 120, title: 'published title' }
+draft: true read before: { _status: 'draft', price: 100, title: 'pending draft title' }
+draft: true read after:  { _status: 'published', price: 120, title: 'published title' }
+```
+
+On a collection with `versions: { drafts: true, maxPerDoc: 2 }`, the draft saves prune the published version row. The published content then only exists in the main document, and the update by ID overwrites it with the draft:
+
+```
+maxPerDoc: 2, update by ID without draft
+version rows after publish + 3 draft saves: [draft 'draft save 2'] [draft 'draft save 3' latest]
+live document before update: { _status: 'published', price: 100, title: 'published title' }
+live document after update:  { _status: 'draft', price: 120, title: 'draft save 3' }
+```
+
 To run it again from scratch, delete `repro.db`.

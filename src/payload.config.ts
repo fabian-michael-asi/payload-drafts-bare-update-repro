@@ -11,6 +11,14 @@ export default buildConfig({
       ],
       versions: { drafts: true },
     },
+    {
+      slug: 'capped-posts',
+      fields: [
+        { name: 'title', type: 'text' },
+        { name: 'price', type: 'number' },
+      ],
+      versions: { drafts: true, maxPerDoc: 2 },
+    },
   ],
   db: sqliteAdapter({ client: { url: 'file:./repro.db' } }),
   globals: [
