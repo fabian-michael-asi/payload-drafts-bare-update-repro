@@ -13,6 +13,16 @@ export default buildConfig({
     },
   ],
   db: sqliteAdapter({ client: { url: 'file:./repro.db' } }),
+  globals: [
+    {
+      slug: 'settings',
+      fields: [
+        { name: 'title', type: 'text' },
+        { name: 'price', type: 'number' },
+      ],
+      versions: { drafts: true },
+    },
+  ],
   secret: 'repro-secret',
   telemetry: false,
 })

@@ -9,6 +9,8 @@ const variants = [
   { label: 'update with draft: false', args: { draft: false } },
 ]
 
+const expected = { _status: 'published', price: 120, title: 'published title' }
+
 for (const { label, args } of variants) {
   const { id } = await payload.create({
     collection: 'posts',
@@ -35,8 +37,33 @@ for (const { label, args } of variants) {
   console.log(`\n${label}`)
   console.log('  live document before:', pick(before))
   console.log('  live document after: ', pick(after))
-  console.log('  expected:            ', { _status: 'published', price: 120, title: 'published title' })
+  console.log('  expected:            ', expected)
   console.log('  found by a `_status: published` query after:', publishedOnly.totalDocs === 1)
+}
+
+for (const { label, args } of variants) {
+  await payload.updateGlobal({
+    slug: 'settings',
+    data: { _status: 'published', price: 100, title: 'published title' },
+  })
+
+  await payload.updateGlobal({
+    slug: 'settings',
+    data: { title: 'pending draft title' },
+    draft: true,
+  })
+
+  const before = await payload.findGlobal({ slug: 'settings' })
+
+  await payload.updateGlobal({ slug: 'settings', data: { price: 120 }, ...args })
+
+  const after = await payload.findGlobal({ slug: 'settings' })
+
+  console.log(`\nglobal, ${label}`)
+  console.log('  live global before:', pick(before))
+  console.log('  live global after: ', pick(after))
+  console.log('  expected:          ', expected)
+  console.log('  still published after:', after._status === 'published')
 }
 
 process.exit(0)
