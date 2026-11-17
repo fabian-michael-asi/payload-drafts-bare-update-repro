@@ -1,0 +1,15 @@
+{
+  "name": "payload-drafts-bare-update-repro",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "repro": "payload run src/repro.ts"
+  },
+  "dependencies": {
+    "@payloadcms/db-sqlite": "3.93.0",
+    "payload": "3.93.0"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}
